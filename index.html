@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="format-detection" content="telephone=no, email=no">
+<meta name="description" content="勇闯318 · 三天不回家 — G318川藏线自驾三日游，塔公草原音乐节">
+<meta property="og:title" content="勇闯318 · 三天不回家 🚶">
+<meta property="og:description" content="属于我们的G318冒险故事：泸定→塔公草原音乐节→康定→成都，海拔最高4300m！">
+<meta property="og:type" content="website">
+<meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 210'%3E%3Crect width='400' height='210' fill='%23FFB6C1'/%3E%3Ctext x='200' y='100' text-anchor='middle' fill='%23FF1493' font-size='32' font-family='sans-serif'%3E🚶 勇闯318%3C/text%3E%3Ctext x='200' y='145' text-anchor='middle' fill='%23FF69B4' font-size='20' font-family='sans-serif'%3E三天不回家%3C/text%3E%3Ctext x='200' y='180' text-anchor='middle' fill='%23999' font-size='14' font-family='sans-serif'%3EG318自驾 · 塔公音乐节%3C/text%3E%3C/svg%3E">
+<title>勇闯318 · 三天不回家 🚶</title>
+<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<script src="https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root {
+  --pink: #FFB6C1;
+  --pink-light: #FFF0F5;
+  --pink-dark: #FF69B4;
+  --red: #FF1493;
+  --white: #FFFFFF;
+  --shadow: rgba(255,105,180,0.12);
+}
+body {
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', sans-serif;
+  background: linear-gradient(135deg, #FFE4E9 0%, #FFD1DC 30%, #FFC0CB 70%, #FFB6C1 100%);
+  min-height: 100vh; overflow-x: hidden; -webkit-font-smoothing: antialiased;
+}
+.floating-decor {
+  position: fixed; pointer-events: none; z-index: 0;
+  animation: floatUp linear infinite; opacity: 0.3;
+}
+@keyframes floatUp {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.4; }
+  90% { opacity: 0.4; }
+  100% { transform: translateY(-60px) rotate(720deg); opacity: 0; }
+}
+.app-wrapper { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 16px 12px; }
+
+.header-block { text-align: center; padding: 20px 12px 14px; }
+.header-block .title-block {
+  display: inline-block; background: rgba(255,255,255,0.9);
+  border-radius: 40px; padding: 16px 40px;
+  box-shadow: 0 8px 32px var(--shadow);
+  border: 3px solid var(--pink); position: relative;
+}
+.header-block h1 {
+  font-size: 2em; color: var(--red);
+  text-shadow: 2px 2px 0 var(--pink-light);
+  letter-spacing: 4px;
+}
+.header-block .subtitle { color: var(--pink-dark); font-size: 0.95em; margin-top: 4px; letter-spacing: 2px; }
+.header-block .title-bow { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); font-size: 26px; }
+
+.char-bar { display: flex; justify-content: center; align-items: center; gap: 28px; margin: 14px 0 4px; }
+.char-item {
+  display: flex; flex-direction: column; align-items: center;
+  cursor: pointer; position: relative; transition: transform 0.3s;
+}
+.char-item:active { transform: scale(0.92); }
+.char-avatar {
+  width: 68px; height: 68px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--pink-light), var(--pink));
+  border: 3px solid var(--white);
+  box-shadow: 0 4px 16px var(--shadow);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; animation: bounce 2.5s ease-in-out infinite;
+}
+.char-item:nth-child(2) .char-avatar { animation-delay: 0.6s; }
+@keyframes bounce {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+.char-name {
+  margin-top: 5px; font-size: 0.8em; color: var(--red);
+  background: rgba(255,255,255,0.7); padding: 2px 12px; border-radius: 12px;
+}
+.char-speech {
+  max-width: 200px; background: var(--white);
+  border: 2px solid var(--pink); border-radius: 18px 18px 18px 4px;
+  padding: 6px 14px; font-size: 0.78em; color: #555;
+  box-shadow: 0 3px 12px var(--shadow);
+  display: none; position: absolute; top: -52px;
+  left: 50%; transform: translateX(-50%);
+  white-space: nowrap; z-index: 5;
+}
+.char-item.active .char-speech { display: block; }
+
+.day-tabs { display: flex; justify-content: center; gap: 8px; margin: 18px 0 14px; flex-wrap: wrap; }
+.day-tab {
+  background: rgba(255,255,255,0.55); border: 3px solid transparent;
+  border-radius: 25px; padding: 10px 24px; cursor: pointer;
+  font-family: inherit; font-size: 0.95em;
+  color: #999; transition: all 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  -webkit-user-select: none; user-select: none;
+}
+.day-tab:active { transform: scale(0.95); }
+.day-tab.active {
+  background: var(--white); border-color: var(--pink-dark);
+  color: var(--red); box-shadow: 0 6px 24px var(--shadow);
+}
+.day-tab .tab-date { display: block; font-size: 0.65em; margin-top: 2px; opacity: 0.6; }
+
+.day-content { display: none; animation: fadeSlideIn 0.5s ease; }
+.day-content.active { display: block; }
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+  background: rgba(255,255,255,0.92); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border-radius: 24px; padding: 22px 18px; margin-bottom: 16px;
+  box-shadow: 0 8px 32px var(--shadow);
+  border: 2px solid rgba(255,182,193,0.3); position: relative; overflow: hidden;
+}
+.card-bow { position: absolute; top: 8px; right: 12px; font-size: 20px; opacity: 0.3; }
+.card h2 { color: var(--red); font-size: 1.25em; margin-bottom: 12px; letter-spacing: 1px; }
+.card h3 { color: var(--pink-dark); font-size: 0.95em; margin-bottom: 10px; }
+
+.map-section { margin-bottom: 16px; }
+.map-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px; }
+.map-header h2 { margin-bottom: 0; font-size: 1.05em; }
+.map-legend { display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.72em; color: #666; align-items: center; }
+.map-legend .lg { display: flex; align-items: center; gap: 4px; }
+.map-legend .lg-dot { width: 20px; height: 4px; border-radius: 2px; }
+.map-container { border-radius: 18px; overflow: hidden; box-shadow: 0 4px 20px var(--shadow); border: 3px solid var(--white); }
+#routeMap { width: 100%; height: 380px; }
+.route-info {
+  display: flex; gap: 12px; flex-wrap: wrap; padding: 10px 14px;
+  background: rgba(255,255,255,0.5); border-radius: 14px;
+  margin-top: 10px; font-size: 0.78em; color: #555;
+}
+.weather-strip {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;
+  padding: 10px 14px; background: rgba(255,255,255,0.5);
+  border-radius: 14px; font-size: 0.78em;
+}
+.weather-strip .ws-item {
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 10px; background: var(--pink-light); border-radius: 20px;
+}
+.weather-strip .ws-item .ws-alt { color: #888; font-size: 0.85em; }
+.weather-strip .ws-temp { font-weight: bold; color: var(--pink-dark); }
+
+.timeline { position: relative; padding-left: 34px; }
+.timeline::before {
+  content: ''; position: absolute; left: 15px; top: 0; bottom: 0;
+  width: 3px; background: linear-gradient(to bottom, var(--pink), var(--pink-dark)); border-radius: 3px;
+}
+.timeline-item {
+  position: relative; margin-bottom: 14px; padding: 10px 12px;
+  background: var(--pink-light); border-radius: 14px;
+  border: 2px solid var(--white); transition: transform 0.2s;
+}
+.timeline-item:last-child { margin-bottom: 0; }
+.timeline-dot {
+  position: absolute; left: -26px; top: 12px;
+  width: 16px; height: 16px; background: var(--pink-dark);
+  border: 3px solid var(--white); border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--pink); z-index: 1;
+}
+.timeline-item.highlight .timeline-dot {
+  background: var(--red); box-shadow: 0 0 0 4px var(--pink);
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 4px var(--pink); }
+  50% { box-shadow: 0 0 0 7px rgba(255,105,180,0.25); }
+}
+.timeline-time { font-size: 0.8em; color: var(--pink-dark); font-weight: bold; margin-bottom: 2px; }
+.timeline-text { font-size: 0.9em; color: #555; line-height: 1.5; }
+.timeline-text .hl { color: var(--red); font-weight: bold; }
+.alt-badge {
+  display: inline-block; background: rgba(255,105,180,0.15);
+  color: var(--pink-dark); font-size: 0.75em;
+  padding: 1px 8px; border-radius: 10px; margin-left: 4px;
+}
+
+.supply-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 6px; }
+.supply-item {
+  background: var(--pink-light); border: 2px solid transparent; border-radius: 12px;
+  padding: 8px 4px; text-align: center; cursor: pointer;
+  transition: all 0.2s; font-size: 0.78em; color: #666;
+  -webkit-user-select: none; user-select: none;
+}
+.supply-item:active { transform: scale(0.92); }
+.supply-item.checked { border-color: #90EE90; background: #F0FFF0; text-decoration: line-through; color: #aaa; }
+.supply-item .si { font-size: 1.4em; display: block; margin-bottom: 2px; }
+
+.schedule-table { width: 100%; border-collapse: separate; border-spacing: 0 4px; }
+.schedule-table td {
+  padding: 7px 10px; background: var(--pink-light); border-radius: 10px; font-size: 0.85em; color: #555;
+}
+.schedule-table td:first-child { font-weight: bold; color: var(--pink-dark); width: 65px; text-align: center; }
+
+.food-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.food-tag {
+  background: var(--pink-light); border: 2px solid var(--white);
+  border-radius: 18px; padding: 4px 12px; font-size: 0.82em;
+  color: #666; cursor: pointer; transition: all 0.2s;
+  -webkit-user-select: none; user-select: none;
+}
+.food-tag:active { transform: scale(0.92); }
+.food-tag.liked { background: var(--pink-dark); color: white; }
+
+.weather-card {
+  display: none; align-items: center; gap: 14px;
+  background: linear-gradient(135deg, #E8F4FD, #FFF0F5);
+  border-radius: 16px; padding: 12px 14px; margin-top: 10px;
+}
+.weather-loading { text-align: center; padding: 8px; color: #999; font-size: 0.82em; }
+
+.music-visual { display: flex; justify-content: center; align-items: flex-end; gap: 5px; height: 46px; margin: 10px 0; }
+.bar {
+  width: 7px; background: linear-gradient(to top, var(--pink), var(--pink-dark));
+  border-radius: 4px; animation: musicBar 0.8s ease-in-out infinite alternate;
+}
+.bar:nth-child(1) { height: 16px; animation-delay: 0s; }
+.bar:nth-child(2) { height: 32px; animation-delay: 0.1s; }
+.bar:nth-child(3) { height: 24px; animation-delay: 0.2s; }
+.bar:nth-child(4) { height: 40px; animation-delay: 0.3s; }
+.bar:nth-child(5) { height: 20px; animation-delay: 0.4s; }
+.bar:nth-child(6) { height: 36px; animation-delay: 0.15s; }
+.bar:nth-child(7) { height: 28px; animation-delay: 0.25s; }
+@keyframes musicBar {
+  0% { transform: scaleY(0.5); }
+  100% { transform: scaleY(1); }
+}
+
+.stats-bar { display: flex; gap: 10px; flex-wrap: wrap; }
+.stat-item { flex: 1; min-width: 80px; background: var(--pink-light); border-radius: 12px; padding: 10px; text-align: center; }
+.stat-num { font-size: 1.3em; color: var(--red); font-weight: bold; }
+.stat-label { font-size: 0.72em; color: #888; margin-top: 2px; }
+
+.interact-btn {
+  background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+  color: white; border: none; border-radius: 25px;
+  padding: 8px 20px; font-family: inherit; font-size: 0.88em;
+  cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 16px var(--shadow); display: inline-block;
+}
+.interact-btn:active { transform: scale(0.93); }
+.interact-btn.small { padding: 5px 12px; font-size: 0.75em; }
+
+.sparkle {
+  position: fixed; pointer-events: none; font-size: 14px;
+  animation: sparkleFade 1.2s ease-out forwards; z-index: 999;
+}
+@keyframes sparkleFade {
+  0% { opacity: 1; transform: translate(0,0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+}
+
+.prelude-box {
+  background: linear-gradient(135deg, #2c3e7b, #1a1a4e);
+  border-radius: 18px; padding: 14px 16px; margin-bottom: 16px;
+  color: #FFD700; font-size: 0.9em; position: relative; overflow: hidden;
+}
+.prelude-box::after { content: '🌙'; position: absolute; right: 12px; top: 10px; font-size: 28px; opacity: 0.4; }
+.prelude-box .pb-time { font-size: 0.8em; color: #aac; }
+.prelude-box .pb-text { margin-top: 4px; line-height: 1.6; }
+.prelude-box .pb-alt { color: #8af; font-size: 0.75em; }
+
+@media (max-width: 768px) {
+  .header-block h1 { font-size: 1.3em; }
+  .header-block .title-block { padding: 10px 16px; }
+  .day-tab { padding: 7px 12px; font-size: 0.8em; }
+  #routeMap { height: 260px; }
+  .supply-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
+  .char-avatar { width: 54px; height: 54px; font-size: 26px; }
+  .char-bar { gap: 18px; }
+  .stats-bar { gap: 6px; }
+  .stat-item { min-width: 60px; padding: 8px; }
+  .stat-num { font-size: 1em; }
+}
+@media (max-width: 400px) {
+  .card { padding: 16px 12px; border-radius: 18px; }
+  .day-tab { padding: 6px 10px; font-size: 0.75em; }
+  .char-avatar { width: 48px; height: 48px; font-size: 22px; }
+  .char-bar { gap: 14px; }
+  .schedule-table td { font-size: 0.78em; padding: 5px 8px; }
+  .weather-strip { font-size: 0.72em; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .floating-decor, .char-avatar, .bar, .timeline-item.highlight .timeline-dot { animation: none !important; }
+}
+</style>
+</head>
+<body>
+<div id="decorContainer"></div>
+<div class="app-wrapper">
+
+  <div class="header-block">
+    <div class="title-block">
+      <div class="title-bow">🎀</div>
+      <h1>勇闯318 三天不回家</h1>
+      <div class="subtitle">🚶 属于我们的G318冒险故事</div>
+    </div>
+    <div class="char-bar">
+      <div class="char-item" onclick="toggleSpeech(this,0)">
+        <div class="char-avatar">👱‍♂️</div>
+        <div class="char-name">我</div>
+        <div class="char-speech">宝贝出发啦！🚗💕</div>
+      </div>
+      <div class="char-item" onclick="toggleSpeech(this,1)">
+        <div class="char-avatar">👩‍🦰</div>
+        <div class="char-name">宝贝</div>
+        <div class="char-speech">好期待音乐节呀！🎵✨</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="day-tabs">
+    <div class="day-tab active" onclick="switchDay(0,this)">
+      🛍️ 第一天 <span class="tab-date">7月18日</span>
+    </div>
+    <div class="day-tab" onclick="switchDay(1,this)">
+      🎵 第二天 <span class="tab-date">7月19日</span>
+    </div>
+    <div class="day-tab" onclick="switchDay(2,this)">
+      🏠 第三天 <span class="tab-date">7月20日</span>
+    </div>
+  </div>
+
+  <div class="map-section">
+    <div class="map-header">
+      <h2>🗺️ 行驶轨迹 · G318川藏线</h2>
+      <div class="map-legend">
+        <span class="lg"><span class="lg-dot" style="background:#FF69B4;"></span> 第一天</span>
+        <span class="lg"><span class="lg-dot" style="background:#9370DB;"></span> 第二天</span>
+        <span class="lg"><span class="lg-dot" style="background:#32CD32;"></span> 第三天</span>
+      </div>
+    </div>
+    <div class="map-container"><div id="routeMap"></div></div>
+    <div class="route-info" id="routeInfo"></div>
+    <div class="weather-strip" id="weatherStrip"><span>🌡️ 实时天气加载中...</span></div>
+  </div>
+
+  <!-- DAY 1 -->
+  <div class="day-content active" id="day0">
+    <div class="prelude-box">
+      <div class="pb-time">🌙 7月17日 · 出发前夜</div>
+      <div class="pb-text">
+        <div>18:00 接宝贝下班 <span class="pb-alt">温江 ~540m</span></div>
+        <div>19:30 山姆大采购 🛍️</div>
+        <div>21:30 上高速 → 天全服务区 <span class="pb-alt">~800m</span></div>
+        <div>23:30 翻越二郎山 <span class="pb-alt">隧道 ~2200m</span></div>
+        <div>00:30 到达泸定假日酒店 <span class="pb-alt">泸定 ~1320m</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-bow">🎀</div>
+      <h2>🎒 高原准备清单</h2>
+      <p style="color:#888;font-size:0.82em;margin-bottom:10px;">
+        点击打勾 ✅ · <span id="ckCount" style="color:var(--red);font-weight:bold;">0</span>/13 已准备
+         · <span style="color:var(--pink-dark);font-size:0.9em;">最高海拔 <b>4300m</b> ⛰️</span>
+      </p>
+      <div class="supply-grid" id="supplyGrid"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-bow">🎀</div>
+      <h2>🌄 7月18日 · 音乐节第一天</h2>
+      <p style="color:#888;margin-bottom:10px;font-size:0.85em;">泸定出发 → 翻折多山 → 塔公草原音乐节！</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+        <div class="interact-btn small" onclick="showSparkles('🎤')">🎶 音乐节开始！</div>
+        <div class="interact-btn small" onclick="toggleWeather(1)">🌤️ 天气详情</div>
+        <div class="interact-btn small" onclick="showSparkles('💕')">互动一下</div>
+      </div>
+      <div id="weather1" class="weather-card">
+        <div id="w1Content" class="weather-loading">⏳ 正在获取实时天气...</div>
+      </div>
+      <div class="music-visual">
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-bow">🎀</div>
+      <h2>🗺️ 今日行程</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">09:30</div>
+          <div class="timeline-text">☀️ 起床·化妆·吃早餐 <span class="alt-badge">泸定 ~1320m</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">11:00</div>
+          <div class="timeline-text">退房 → 前往 <span class="hl">塔公草原</span><br>
+            <span style="font-size:0.78em;color:#999;">途经折多山垭口 <span class="alt-badge">~4300m</span></span>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">13:00</div>
+          <div class="timeline-text">中途停服务区休息 <span class="alt-badge">康定 ~2560m</span></div>
+        </div>
+        <div class="timeline-item highlight">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">14:00</div>
+          <div class="timeline-text"><span class="hl">🎶 音乐节开场！→ 23:00</span> <span class="alt-badge">塔公 ~3730m</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">23:00</div>
+          <div class="timeline-text">吃宵夜 🍲（会场附近5分钟）</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">~00:30</div>
+          <div class="timeline-text">回酒店睡觉 💤</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-bow">🎀</div>
+      <h2>🎵 音乐节时间表</h2>
+      <table class="schedule-table">
+        <tr><td>14:00</td><td>🎸 开场·高原之声</td></tr>
+        <tr><td>15:30</td><td>🎤 民谣·草原情歌</td></tr>
+        <tr><td>17:00</td><td>🥁 摇滚·318躁动</td></tr>
+        <tr><td>18:30</td><td>🍱 休息晚餐</td></tr>
+        <tr><td>20:00</td><td>🎧 电音DJ·星空派对</td></tr>
+        <tr><td>21:30</td><td>🌟 神秘嘉宾·压轴</td></tr>
+        <tr><td>23:00</td><td>🎆 烟花收尾</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-bow">🎀</div>
+      <h2>🍲 宵夜清单</h2>
+      <p style="color:#999;font-size:0.78em;margin-bottom:6px;">点击喜欢的标记 ❤️</p>
+      <div class="food-list" id="foodList1"></div>
+    </div>
+  </div>
+
+  <!-- DAY 2 -->
+  <div class="day-content" id="day1">
+    <div class="card">
+      <div class="card-bow">🎀</div>
+      <h2>🌄 7月19日 · 音乐节第二天</h2>
+      <p style="color:#888;margin-bottom:10px;font-size:0.85em;">继续嗨！晚上翻折多山到康定～</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+        <div class="interact-btn small" onclick="showSparkles('☕')">☕ 喝杯咖啡</div>
+        <div class="interact-btn small" onclick="toggleWeather(2)">🌤️ 天气详情</div>
+        <div class="interact-btn small" onclick="showSparkles('❤️')">表白宝贝 💕</div>
+      </div>
+      <div id="weather2" class="weather-card">
+        <div id="w2Content" class="weather-loading">⏳ 正在获取实时天气...</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-bow">🎀</div>
+      <h2>🗺️ 今日行程</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">11:00</div>
+          <div class="timeline-text">💅 起床化妆 <span class="alt-badge">塔公 ~3730m</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">~12:00</div>
+          <div class="timeline-text">退房→吃早餐 🍳（开车10分钟）</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">~13:30</div>
+          <div class="timeline-text">☕ 喝杯咖啡消肿 → 出发去现场</div>
+        </div>
+        <div class="timeline-item highlight">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">14:00</div>
+          <div class="timeline-text"><span class="hl">🎶 第二天音乐节！→ 23:00</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">23:00</div>
+          <div class="timeline-text">宵夜 🍜 → 出发去康定</div>
+        </div>
+        <div class="timeline-item highlight">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">~01:30</div>
+          <div class="timeline-text">到达 <span class="hl">康定</span> 🏨 <span class="alt-badge">~2560m</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-bow">🎀</div>
+      <h2>🎵 音乐节·DAY 2</h2>
+      <table class="schedule-table">
+        <tr><td>14:00</td><td>🎸 午后开场·康定情歌</td></tr>
+        <tr><td>15:30</td><td>🎤 藏谣新编</td></tr>
+        <tr><td>17:00</td><td>🥁 独立乐队·318公路</td></tr>
+        <tr><td>18:30</td><td>🍱 休息晚餐</td></tr>
+        <tr><td>20:00</td><td>🎧 电音之夜·草原蹦迪</td></tr>
+        <tr><td>21:30</td><td>🌟 压轴·星空下</td></tr>
+        <tr><td>23:00</td><td>🎆 音乐节闭幕</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-bow">🎀</div>
+      <h2>🍜 宵夜清单</h2>
+      <p style="color:#999;font-size:0.78em;margin-bottom:6px;">点击喜欢的标记 ❤️</p>
+      <div class="food-list" id="foodList2"></div>
+    </div>
+  </div>
+
+  <!-- DAY 3 -->
+  <div class="day-content" id="day2">
+    <div class="card">
+      <div class="card-bow">🎀</div>
+      <h2>🏠 7月20日 · 返程回家</h2>
+      <p style="color:#888;margin-bottom:10px;font-size:0.85em;">三天冒险结束，带着满满回忆回成都～</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+        <div class="interact-btn small" onclick="showSparkles('🥐')">给宝贝早餐 🥐</div>
+        <div class="interact-btn small" onclick="showSummary()">📊 三日总结</div>
+      </div>
+      <div class="stats-bar">
+        <div class="stat-item"><div class="stat-num">🚗</div><div class="stat-label">600+公里</div></div>
+        <div class="stat-item"><div class="stat-num">🎵</div><div class="stat-label">两天音乐节</div></div>
+        <div class="stat-item"><div class="stat-num">⛰️</div><div class="stat-label">海拔4300m</div></div>
+        <div class="stat-item"><div class="stat-num">❤️</div><div class="stat-label">美好回忆</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-bow">🎀</div>
+      <h2>🗺️ 返程路线</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">08:30</div>
+          <div class="timeline-text">⏰ 起床→给宝贝打早餐 🥐 <span class="alt-badge">康定 ~2560m</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">09:00</div>
+          <div class="timeline-text">😴 回笼觉～</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">14:00</div>
+          <div class="timeline-text">退房 🏨 → 出发回成都 🚗</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">~15:50</div>
+          <div class="timeline-text"><span class="hl">名山服务区</span> 休息加油 <span class="alt-badge">~600m</span></div>
+        </div>
+        <div class="timeline-item highlight">
+          <div class="timeline-dot" style="background:#90EE90;box-shadow:0 0 0 4px #90EE90;"></div>
+          <div class="timeline-time">17:30</div>
+          <div class="timeline-text"><span class="hl">🏡 到达温江！到家啦～</span> <span class="alt-badge">~540m</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-bow">🎀</div>
+      <h2>🏨 康定酒店信息</h2>
+      <p style="color:#555;line-height:1.8;font-size:0.9em;">
+      🥐 带早餐服务<br>
+      🚽 智能马桶<br>
+      🔥 地暖（高原晚上冷也不怕）<br>
+      ⏰ 下午2点退房·睡到自然醒再出发～
+      </p>
+    </div>
+
+    <div class="card" style="text-align:center;">
+      <div style="font-size:3em;margin-bottom:8px;">🎉</div>
+      <h2 style="font-size:1em;">勇闯318·三天不回家</h2>
+      <p style="color:#888;margin:6px 0;font-size:0.85em;">
+        圆满完成！和宝贝一起的318冒险 🚶💕
+      </p>
+      <div class="interact-btn" onclick="window.location.reload()">🔄 再看一次</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const supplies = [
+  {i:'💊',n:'红景天'},{i:'🫧',n:'氧气瓶'},{i:'🍬',n:'葡萄糖'},
+  {i:'🔋',n:'充电宝'},{i:'🔦',n:'手电'},{i:'🦟',n:'蚊不叮'},
+  {i:'🕶️',n:'墨镜'},{i:'🥾',n:'鞋套'},{i:'☂️',n:'雨衣雨伞'},
+  {i:'☀️',n:'防晒'},{i:'🪑',n:'躺椅'},{i:'🪪',n:'身份证'},
+  {i:'🧢',n:'遮阳帽'}
+];
+const foods1 = ['🍖 烤羊排','🍢 烤串','🍺 啤酒','🥘 牦牛火锅','🌮 牛肉饼'];
+const foods2 = ['🍜 牦牛肉面','🥟 藏包','🍵 酥油茶','🍲 菌汤锅','🍚 糌粑'];
+
+const places = {
+  '泸定':  { p:[29.9142,102.2332], e:'🌉', alt:'1320m', lat:29.91, lon:102.23 },
+  '康定':  { p:[30.0523,101.9619], e:'🏔️', alt:'2560m', lat:30.05, lon:101.96 },
+  '塔公':  { p:[30.3700,101.5400], e:'🌿', alt:'3730m', lat:30.37, lon:101.54 },
+  '折多山':{ p:[30.0800,101.8000], e:'⛰️', alt:'4300m', lat:30.08, lon:101.80 },
+  '名山':  { p:[30.0800,103.1000], e:'⛽', alt:'600m',  lat:30.08, lon:103.10 },
+  '温江':  { p:[30.6830,103.8360], e:'🏠', alt:'540m',  lat:30.68, lon:103.84 },
+};
+
+const fullRoute = [
+  [30.6830,103.8360],[30.6600,103.9200],[30.0600,102.7500],
+  [29.9142,102.2332],[30.0523,101.9619],[30.3700,101.5400],
+];
+const routes = {
+  0: [[29.9142,102.2332],[30.0523,101.9619],[30.3700,101.5400]],
+  1: [[30.3700,101.5400],[30.0523,101.9619]],
+  2: [[30.0523,101.9619],[30.0800,103.1000],[30.6830,103.8360]],
+};
+const routeColors = {0:'#FF69B4',1:'#9370DB',2:'#32CD32'};
+const routeLabels = {
+  0:'第一天·泸定→塔公草原（音乐节）',
+  1:'第二天·塔公草原→康定（转场）',
+  2:'第三天·康定→成都（返程）',
+};
+
+// Weather with static fallback for China access
+const WEATHER_CACHE = {};
+const STATIC_WEATHER = {
+  '30.37_101.54': { icon:'⛅', temp:18, feels:16, hum:65, wind:12, max:22, min:10 },
+  '30.05_101.96': { icon:'☁️', temp:20, feels:18, hum:60, wind:10, max:24, min:12 },
+  '29.91_102.23': { icon:'☀️', temp:26, feels:25, hum:50, wind:8, max:30, min:18 },
+  '30.08_101.80': { icon:'🌤️', temp:14, feels:12, hum:55, wind:18, max:18, min:6 },
+  '30.68_103.84': { icon:'☀️', temp:30, feels:29, hum:45, wind:6, max:34, min:22 },
+};
+
+async function fetchWeather(lat, lon) {
+  const key = lat.toFixed(2) + '_' + lon.toFixed(2);
+  if (WEATHER_CACHE[key]) return WEATHER_CACHE[key];
+  try {
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=Asia%2FShanghai&forecast_days=3';
+    const resp = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    const d = await resp.json();
+    const w = d.current;
+    const codes = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌦️',56:'🌧️',57:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',66:'🌧️',67:'🌧️',71:'🌨️',73:'🌨️',75:'🌨️',77:'❄️',80:'🌦️',81:'🌦️',82:'🌧️',85:'🌨️',86:'🌨️',95:'⛈️',96:'⛈️',99:'⛈️'};
+    const r = { icon:codes[w.weather_code]||'🌤️', temp:Math.round(w.temperature_2m), feels:Math.round(w.apparent_temperature), hum:w.relative_humidity_2m, wind:Math.round(w.wind_speed_10m), max:Math.round(d.daily.temperature_2m_max[0]), min:Math.round(d.daily.temperature_2m_min[0]) };
+    WEATHER_CACHE[key] = r;
+    return r;
+  } catch(e) {
+    return STATIC_WEATHER[key] || null;
+  }
+}
+
+async function updateWeatherStrip() {
+  const strip = document.getElementById('weatherStrip');
+  strip.innerHTML = '<span>⏳ 正在获取实时天气...</span>';
+  const locs = [
+    {lat:30.37, lon:101.54, name:'塔公草原', alt:'3730m'},
+    {lat:30.05, lon:101.96, name:'康定', alt:'2560m'},
+    {lat:29.91, lon:102.23, name:'泸定', alt:'1320m'},
+    {lat:30.08, lon:101.80, name:'折多山', alt:'4300m'},
+    {lat:30.68, lon:103.84, name:'温江', alt:'540m'},
+  ];
+  const rs = await Promise.all(locs.map(l => fetchWeather(l.lat, l.lon)));
+  let html = '';
+  rs.forEach((r, i) => {
+    if (r) html += '<span class="ws-item"><span class="ws-temp">' + r.temp + '°C</span>' + r.icon + '<b>' + locs[i].name + '</b><span class="ws-alt">' + locs[i].alt + '</span><span style="color:#999;font-size:0.9em;">' + r.min + '~' + r.max + '°C</span></span>';
+  });
+  strip.innerHTML = html || '<span>🌡️ 天气暂时不可用</span>';
+}
+
+async function updateDayWeather() {
+  const w1 = document.getElementById('w1Content');
+  const r1 = await fetchWeather(30.37, 101.54);
+  if (r1) w1.innerHTML = '<div style="display:flex;align-items:center;gap:14px;width:100%;flex-wrap:wrap;"><span style="font-size:2.5em;">' + r1.icon + '</span><div><div style="font-size:1.6em;color:var(--red);font-weight:bold;">' + r1.temp + '°C</div><div style="font-size:0.82em;color:#666;">体感' + r1.feels + '°C·湿度' + r1.hum + '%·风速' + r1.wind + 'km/h</div><div style="font-size:0.82em;color:#666;">塔公草原·海拔3730m·今日' + r1.min + '~' + r1.max + '°C</div><div style="font-size:0.78em;color:#999;margin-top:4px;">🌂 建议带薄外套+雨衣</div></div></div>';
+
+  const w2 = document.getElementById('w2Content');
+  const [r2a, r2b] = await Promise.all([fetchWeather(30.37, 101.54), fetchWeather(30.05, 101.96)]);
+  if (r2a && r2b) w2.innerHTML = '<div style="display:flex;align-items:flex-start;gap:20px;width:100%;flex-wrap:wrap;"><div style="flex:1;min-width:140px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:1.8em;">' + r2a.icon + '</span><div><div style="font-size:1.2em;color:var(--red);font-weight:bold;">' + r2a.temp + '°C</div><div style="font-size:0.75em;color:#888;">塔公·3730m</div></div></div><div style="font-size:0.78em;color:#666;margin-top:4px;">白天' + r2a.max + '°C 夜间' + r2a.min + '°C</div></div><div style="flex:1;min-width:140px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:1.8em;">' + r2b.icon + '</span><div><div style="font-size:1.2em;color:var(--red);font-weight:bold;">' + r2b.temp + '°C</div><div style="font-size:0.75em;color:#888;">康定·2560m</div></div></div><div style="font-size:0.78em;color:#666;margin-top:4px;">白天' + r2b.max + '°C 夜间' + r2b.min + '°C</div></div></div>';
+}
+
+var map, fullBg, allMs = {}, activeLayers = [];
+
+function initMap() {
+  map = L.map('routeMap', { center:[30.0,102.5], zoom:9, zoomControl:true, attributionControl:false });
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:18 }).addTo(map);
+  fullBg = L.polyline(fullRoute, { color:'#FFB6C1', weight:3, opacity:0.2, dashArray:'6,10' }).addTo(map);
+  Object.keys(places).forEach(function(name) {
+    var d = places[name];
+    var ic = L.divIcon({
+      html: '<div style="width:48px;background:rgba(255,255,255,0.95);border:3px solid #FF69B4;border-radius:50%;display:flex;flex-direction:column;align-items:center;padding:2px 0;box-shadow:0 3px 12px rgba(255,105,180,0.3);font-size:11px;line-height:1.2;"><span style="font-size:16px;">' + d.e + '</span><span style="color:#FF1493;font-weight:bold;">' + d.alt + '</span></div>',
+      className:'', iconSize:[48,48], iconAnchor:[24,24],
+    });
+    var m = L.marker(d.p, {icon:ic}).addTo(map);
+    m.bindTooltip('<b>' + name + '</b><br>海拔 ' + d.alt, {direction:'top', offset:[0,-24]});
+    allMs[name] = m;
+  });
+  map.fitBounds(fullBg.getBounds().pad(0.1));
+}
+
+function drawDayRoute(day) {
+  for (var i = 0; i < activeLayers.length; i++) map.removeLayer(activeLayers[i]);
+  activeLayers = [];
+  var pts = routes[day];
+  if (!pts || pts.length < 2) return;
+  var color = routeColors[day];
+  var temp = L.polyline([pts[0]], { color:color, weight:5, opacity:0.9 }).addTo(map);
+  activeLayers.push(temp);
+  var step = 0;
+  var steps = 25, segs = pts.length - 1;
+  function ani() {
+    step++;
+    var p = step / steps, ns = Math.min(Math.ceil(p * segs), segs), sf = p * segs - (ns - 1);
+    var arr = [];
+    for (var s = 0; s < ns; s++) arr.push(pts[s]);
+    if (ns <= segs && sf > 0 && ns > 0) { var a = pts[ns-1], b = pts[ns]; arr.push([a[0]+(b[0]-a[0])*sf, a[1]+(b[1]-a[1])*sf]); }
+    temp.setLatLngs(arr);
+    if (step < steps) requestAnimationFrame(ani);
+  }
+  ani();
+  document.getElementById('routeInfo').innerHTML = '<span>📍 ' + routeLabels[day] + '</span>';
+  var an = {0:['泸定','折多山','康定','塔公'], 1:['塔公','折多山','康定'], 2:['康定','名山','温江']};
+  Object.keys(allMs).forEach(function(n) {
+    var e = allMs[n].getElement();
+    if (e) e.style.transform = (an[day]||[]).indexOf(n) > -1 ? 'scale(1.15)' : 'scale(0.85)';
+  });
+}
+
+function switchDay(day, el) {
+  var tabs = document.querySelectorAll('.day-tab');
+  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+  var contents = document.querySelectorAll('.day-content');
+  for (var i = 0; i < contents.length; i++) contents[i].classList.remove('active');
+  el.classList.add('active');
+  document.getElementById('day' + day).classList.add('active');
+  drawDayRoute(day);
+  var views = [{c:[30.2,102.2],z:10},{c:[30.2,101.8],z:10},{c:[30.3,102.5],z:9}];
+  var v = views[day];
+  map.setView(v.c, v.z, {animate:true});
+}
+
+function initSupplies() {
+  var g = document.getElementById('supplyGrid');
+  var ck = 0;
+  for (var i = 0; i < supplies.length; i++) {
+    var s = supplies[i];
+    var d = document.createElement('div');
+    d.className = 'supply-item';
+    d.innerHTML = '<span class="si">' + s.i + '</span>' + s.n;
+    d.onclick = function() { this.classList.toggle('checked'); ck += this.classList.contains('checked') ? 1 : -1; document.getElementById('ckCount').textContent = ck; };
+    g.appendChild(d);
+  }
+}
+
+function initFoods() {
+  var ids = ['foodList1','foodList2'];
+  for (var i = 0; i < ids.length; i++) {
+    var el = document.getElementById(ids[i]);
+    var data = i === 0 ? foods1 : foods2;
+    for (var j = 0; j < data.length; j++) {
+      var t = document.createElement('span');
+      t.className = 'food-tag';
+      t.textContent = data[j];
+      t.onclick = function() { this.classList.toggle('liked'); };
+      el.appendChild(t);
+    }
+  }
+}
+
+function toggleSpeech(el, idx) {
+  el.classList.toggle('active');
+  var msgs = [['宝贝出发啦！🚗💕','翻过折多山就到啦🏔️','音乐节嗨起来！🎵'], ['318的风景好美🏔️','我们一起拍照吧📸','回成都吃火锅🍲']];
+  el.querySelector('.char-speech').textContent = msgs[idx][Math.floor(Math.random() * msgs[idx].length)];
+}
+
+function toggleWeather(n) { var e = document.getElementById('weather' + n); e.style.display = e.style.display === 'flex' ? 'none' : 'flex'; }
+
+function showSparkles(emoji) {
+  var em = emoji || ['✨','💕','🎀','🌟','❤️'][Math.floor(Math.random()*5)];
+  for (var i = 0; i < 18; i++) {
+    var s = document.createElement('div');
+    s.className = 'sparkle';
+    s.textContent = em;
+    s.style.left = (Math.random() * window.innerWidth * 0.7 + window.innerWidth * 0.15) + 'px';
+    s.style.top = (Math.random() * window.innerHeight * 0.4 + 60) + 'px';
+    s.style.setProperty('--tx', (Math.random() * 200 - 100) + 'px');
+    s.style.setProperty('--ty', (-Math.random() * 150 - 50) + 'px');
+    document.body.appendChild(s);
+    setTimeout(function() { s.remove(); }, 1200);
+  }
+}
+
+function showSummary() {
+  showSparkles('🎉');
+  var items = ['🚗 总行驶约 600+ 公里','🎵 两天塔公草原音乐节','⛰️ 最高海拔 4300m（折多山）','🌉 途经泸定桥、二郎山隧道','❤️ 和宝贝的三天美好回忆','🎉 勇闯318圆满完成！'];
+  for (var i = 0; i < items.length; i++) {
+    (function(s, i) {
+      setTimeout(function() {
+        var d = document.createElement('div');
+        d.className = 'sparkle';
+        d.style.animation = 'none';
+        d.textContent = s;
+        d.style.left = '12%';
+        d.style.top = (18 + i * 11) + '%';
+        d.style.fontSize = '0.9em';
+        d.style.color = '#FF1493';
+        d.style.background = 'rgba(255,255,255,0.92)';
+        d.style.padding = '5px 14px';
+        d.style.borderRadius = '18px';
+        d.style.border = '2px solid #FFB6C1';
+        d.style.boxShadow = '0 4px 16px rgba(255,105,180,0.15)';
+        document.body.appendChild(d);
+        setTimeout(function() { d.remove(); }, 4000);
+      }, i * 500);
+    })(items[i], i);
+  }
+}
+
+function initDecor() {
+  var c = document.getElementById('decorContainer');
+  var es = ['🎀','💕','✨','🌸','💗','🌟','🎵'];
+  for (var i = 0; i < 18; i++) {
+    var e = document.createElement('div');
+    e.className = 'floating-decor';
+    e.textContent = es[i % es.length];
+    e.style.left = Math.random() * 100 + '%';
+    e.style.fontSize = (12 + Math.random() * 18) + 'px';
+    e.style.animationDuration = (12 + Math.random() * 18) + 's';
+    e.style.animationDelay = Math.random() * 20 + 's';
+    c.appendChild(e);
+  }
+}
+
+initMap();
+initSupplies();
+initFoods();
+initDecor();
+drawDayRoute(0);
+updateWeatherStrip();
+updateDayWeather();
+
+setInterval(function() { updateWeatherStrip(); updateDayWeather(); }, 600000);
+
+setTimeout(function() {
+  var f = document.querySelector('.char-item');
+  if (f) toggleSpeech(f, 0);
+}, 1500);
+
+window.addEventListener('touchstart', function(){}, {passive:true});
+</script>
+</body>
+</html>
