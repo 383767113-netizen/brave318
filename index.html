@@ -334,10 +334,10 @@ body {
 
   <div class="day-tabs">
     <div class="day-tab active" onclick="switchDay(0,this)">
-      🚗 出发日 <span class="tab-date">7月18日</span>
+      🚗 第一天 <span class="tab-date">7月18日</span>
     </div>
     <div class="day-tab" onclick="switchDay(1,this)">
-      🎵 第一天 <span class="tab-date">7月19日</span>
+      🎵 第二天 <span class="tab-date">7月19日</span>
     </div>
     <div class="day-tab" onclick="switchDay(2,this)">
       🏠 返程 <span class="tab-date">7月20日</span>
@@ -361,11 +361,21 @@ body {
   <!-- DAY 1 -->
   <div class="day-content active" id="day0">
     <div class="prelude-box">
-      <div class="pb-time">🌙 7月17日 · 出发前夜</div>
+      <div class="pb-time">🌙 7月16日 · 下班采购夜</div>
       <div class="pb-text">
-        <div>18:00 接宝贝欣欣下班 <span class="pb-alt">温江 ~540m</span></div>
-        <div>19:30 山姆大采购 🛍️</div>
-        <div>🏠 回家收拾行李，早点休息</div>
+        <div>18:00 下班啦！🕐</div>
+        <div>19:00 逛山姆大采购 🛍️</div>
+        <div>🏠 回家收拾行李，早早睡觉 💤</div>
+      </div>
+    </div>
+
+    <div class="prelude-box">
+      <div class="pb-time">🌙 7月17日 · 出发夜</div>
+      <div class="pb-text">
+        <div>19:00 买百合花 🌸 → 出发去泸定 🚗 <span class="pb-alt">温江 ~540m</span></div>
+        <div>~21:30 到达泸定假日酒店 🏨 <span class="pb-alt">泸定 ~1320m</span></div>
+        <div>22:00 泸定吃宵夜 🍲</div>
+        <div>~23:30 回酒店休息 💤</div>
       </div>
     </div>
 
@@ -381,7 +391,7 @@ body {
 
     <div class="card">
       <div class="card-bow">🎀</div>
-      <h2>🌄 7月18日 · 出发去泸定</h2>
+      <h2>🌄 7月18日 · 第一天 · 泸定→塔公</h2>
       <p style="color:#888;margin-bottom:10px;font-size:0.85em;">从温江出发，晚上到泸定～</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
         <div class="interact-btn small" onclick="showSparkles('🎤')">🎶 音乐节开始！</div>
@@ -401,34 +411,39 @@ body {
       <div class="card-bow">🎀</div>
       <h2>🗺️ 今日行程</h2>
       <div class="timeline">
+        <div class="timeline-item highlight">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">~09:00</div>
+          <div class="timeline-text"><span class="hl">从泸定出发去塔公！</span> 🚗 <span class="alt-badge">泸定 ~1320m</span></div>
+        </div>
         <div class="timeline-item">
           <div class="timeline-dot"></div>
-          <div class="timeline-time">~15:00</div>
-          <div class="timeline-text">☀️ 午休·准备出发的东西</div>
+          <div class="timeline-time">~10:30</div>
+          <div class="timeline-text">翻越 <span class="hl">折多山</span> ⛰️ <span class="alt-badge">~4300m</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">~12:00</div>
+          <div class="timeline-text">到达 <span class="hl">塔公草原</span> 🌿 <span class="alt-badge">~3730m</span></div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-time">12:30</div>
+          <div class="timeline-text">午餐·休息 🍜</div>
         </div>
         <div class="timeline-item highlight">
           <div class="timeline-dot"></div>
-          <div class="timeline-time">18:30</div>
-          <div class="timeline-text"><span class="hl">接宝贝欣欣下班 🚗💕</span> <span class="alt-badge">温江 ~540m</span></div>
-        </div>
-        <div class="timeline-item highlight">
-          <div class="timeline-dot"></div>
-          <div class="timeline-time">19:00</div>
-          <div class="timeline-text"><span class="hl">出发去泸定！</span> 🚗 <span class="alt-badge">温江 ~540m</span></div>
+          <div class="timeline-time">13:50</div>
+          <div class="timeline-text"><span class="hl">🎶 音乐节！DAY 1</span></div>
         </div>
         <div class="timeline-item">
           <div class="timeline-dot"></div>
           <div class="timeline-time">~21:30</div>
-          <div class="timeline-text">到达 <span class="hl">泸定假日酒店</span> 🏨 <span class="alt-badge">泸定 ~1320m</span></div>
+          <div class="timeline-text">音乐节结束 → 宵夜 🍜</div>
         </div>
         <div class="timeline-item">
           <div class="timeline-dot"></div>
-          <div class="timeline-time">22:00</div>
-          <div class="timeline-text">泸定吃宵夜 🍲</div>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-dot"></div>
-          <div class="timeline-time">~23:30</div>
+          <div class="timeline-time">~23:00</div>
           <div class="timeline-text">回酒店休息 💤</div>
         </div>
       </div>
@@ -460,7 +475,7 @@ body {
   <div class="day-content" id="day1">
     <div class="card">
       <div class="card-bow">🎀</div>
-      <h2>🌄 7月19日 · 音乐节第一天</h2>
+      <h2>🌄 7月19日 · 音乐节第二天</h2>
       <p style="color:#888;margin-bottom:10px;font-size:0.85em;">泸定出发 → 翻折多山 → 塔公草原音乐节！</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
         <div class="interact-btn small" onclick="showSparkles('☕')">☕ 喝杯咖啡</div>
@@ -494,7 +509,7 @@ body {
         <div class="timeline-item highlight">
           <div class="timeline-dot"></div>
           <div class="timeline-time">14:00</div>
-          <div class="timeline-text"><span class="hl">🎶 音乐节！→ 23:00</span></div>
+          <div class="timeline-text"><span class="hl">🎶 音乐节！DAY 2 → 23:00</span></div>
         </div>
         <div class="timeline-item">
           <div class="timeline-dot"></div>
@@ -634,8 +649,8 @@ const routes = {
 };
 const routeColors = {0:'#FF69B4',1:'#9370DB',2:'#32CD32'};
 const routeLabels = {
-  0:'出发日·温江→泸定',
-  1:'第一天·泸定→塔公草原（音乐节）',
+  0:'第一天·温江→泸定',
+  1:'第二天·泸定→塔公草原（音乐节）',
   2:'第二天·塔公→康定（转场）',
 };
 
