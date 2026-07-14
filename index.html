@@ -286,6 +286,21 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .floating-decor, .char-avatar, .bar, .timeline-item.highlight .timeline-dot { animation: none !important; }
 }
+
+.star-twinkle {
+  position: absolute; pointer-events: none; font-size: 16px;
+  animation: twinkle 2s ease-in-out infinite alternate; z-index: 0;
+}
+.star-twinkle:nth-child(1) { left: 5%; top: 8%; animation-delay: 0s; font-size: 14px; }
+.star-twinkle:nth-child(2) { right: 8%; top: 12%; animation-delay: 0.4s; font-size: 18px; }
+.star-twinkle:nth-child(3) { left: 12%; top: 20%; animation-delay: 0.8s; font-size: 12px; }
+.star-twinkle:nth-child(4) { right: 15%; bottom: 15%; animation-delay: 1.2s; font-size: 16px; }
+.star-twinkle:nth-child(5) { left: 20%; bottom: 10%; animation-delay: 0.6s; font-size: 15px; }
+@keyframes twinkle {
+  0% { opacity: 0.2; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1.2); }
+}
+
 </style>
 </head>
 <body>
@@ -294,6 +309,11 @@ body {
 
   <div class="header-block">
     <div class="title-block">
+            <div class="star-twinkle">⭐</div>
+      <div class="star-twinkle">🌟</div>
+      <div class="star-twinkle">⭐</div>
+      <div class="star-twinkle">🌟</div>
+      <div class="star-twinkle">⭐</div>
       <div class="title-bow">🎀</div>
       <h1>勇闯318 三天不回家</h1>
       <div class="subtitle">🚶 属于我们的G318冒险故事</div>
@@ -302,11 +322,11 @@ body {
       <div class="char-item" onclick="toggleSpeech(this,0)">
         <div class="char-avatar">👱‍♂️</div>
         <div class="char-name">我</div>
-        <div class="char-speech">宝贝出发啦！🚗💕</div>
+        <div class="char-speech">宝贝欣欣出发啦！🚗💕</div>
       </div>
       <div class="char-item" onclick="toggleSpeech(this,1)">
         <div class="char-avatar">👩‍🦰</div>
-        <div class="char-name">宝贝</div>
+        <div class="char-name">宝贝欣欣</div>
         <div class="char-speech">好期待音乐节呀！🎵✨</div>
       </div>
     </div>
@@ -343,7 +363,7 @@ body {
     <div class="prelude-box">
       <div class="pb-time">🌙 7月17日 · 出发前夜</div>
       <div class="pb-text">
-        <div>18:00 接宝贝下班 <span class="pb-alt">温江 ~540m</span></div>
+        <div>18:00 接宝贝欣欣下班 <span class="pb-alt">温江 ~540m</span></div>
         <div>19:30 山姆大采购 🛍️</div>
         <div>🏠 回家收拾行李，早点休息</div>
       </div>
@@ -389,7 +409,7 @@ body {
         <div class="timeline-item highlight">
           <div class="timeline-dot"></div>
           <div class="timeline-time">18:30</div>
-          <div class="timeline-text"><span class="hl">接宝贝下班 🚗💕</span> <span class="alt-badge">温江 ~540m</span></div>
+          <div class="timeline-text"><span class="hl">接宝贝欣欣下班 🚗💕</span> <span class="alt-badge">温江 ~540m</span></div>
         </div>
         <div class="timeline-item highlight">
           <div class="timeline-dot"></div>
@@ -445,7 +465,7 @@ body {
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
         <div class="interact-btn small" onclick="showSparkles('☕')">☕ 喝杯咖啡</div>
         <div class="interact-btn small" onclick="toggleWeather(2)">🌤️ 天气详情</div>
-        <div class="interact-btn small" onclick="showSparkles('❤️')">表白宝贝 💕</div>
+        <div class="interact-btn small" onclick="showSparkles('❤️')">表白宝贝欣欣 💕</div>
       </div>
       <div id="weather2" class="weather-card">
         <div id="w2Content" class="weather-loading">⏳ 正在获取实时天气...</div>
@@ -517,7 +537,7 @@ body {
       <h2>🏠 7月20日 · 返程回家</h2>
       <p style="color:#888;margin-bottom:10px;font-size:0.85em;">三天冒险结束，带着满满回忆回成都～</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
-        <div class="interact-btn small" onclick="showSparkles('🥐')">给宝贝早餐 🥐</div>
+        <div class="interact-btn small" onclick="showSparkles('🥐')">给宝贝欣欣早餐 🥐</div>
         <div class="interact-btn small" onclick="showSummary()">📊 三日总结</div>
       </div>
       <div class="stats-bar">
@@ -535,7 +555,7 @@ body {
         <div class="timeline-item">
           <div class="timeline-dot"></div>
           <div class="timeline-time">08:30</div>
-          <div class="timeline-text">⏰ 起床→给宝贝打早餐 🥐 <span class="alt-badge">康定 ~2560m</span></div>
+          <div class="timeline-text">⏰ 起床→给宝贝欣欣打早餐 🥐 <span class="alt-badge">康定 ~2560m</span></div>
         </div>
         <div class="timeline-item">
           <div class="timeline-dot"></div>
@@ -575,7 +595,7 @@ body {
       <div style="font-size:3em;margin-bottom:8px;">🎉</div>
       <h2 style="font-size:1em;">勇闯318·三天不回家</h2>
       <p style="color:#888;margin:6px 0;font-size:0.85em;">
-        圆满完成！和宝贝一起的318冒险 🚶💕
+        圆满完成！和宝贝欣欣一起的318冒险 🚶💕
       </p>
       <div class="interact-btn" onclick="window.location.reload()">🔄 再看一次</div>
     </div>
@@ -764,14 +784,14 @@ function initFoods() {
 
 function toggleSpeech(el, idx) {
   el.classList.toggle('active');
-  var msgs = [['宝贝出发啦！🚗💕','翻过折多山就到啦🏔️','音乐节嗨起来！🎵'], ['318的风景好美🏔️','我们一起拍照吧📸','回成都吃火锅🍲']];
+  var msgs = [['宝贝欣欣出发啦！🚗💕','翻过折多山就到啦🏔️','音乐节嗨起来！🎵'], ['318的风景好美🏔️','我们一起拍照吧📸','回成都吃火锅🍲']];
   el.querySelector('.char-speech').textContent = msgs[idx][Math.floor(Math.random() * msgs[idx].length)];
 }
 
 function toggleWeather(n) { var e = document.getElementById('weather' + n); e.style.display = e.style.display === 'flex' ? 'none' : 'flex'; }
 
 function showSparkles(emoji) {
-  var em = emoji || ['✨','💕','🎀','🌟','❤️'][Math.floor(Math.random()*5)];
+  var em = emoji || ['⭐','✨','💕','🎀','🌟','❤️'][Math.floor(Math.random()*6)];
   for (var i = 0; i < 18; i++) {
     var s = document.createElement('div');
     s.className = 'sparkle';
@@ -787,7 +807,7 @@ function showSparkles(emoji) {
 
 function showSummary() {
   showSparkles('🎉');
-  var items = ['🚗 总行驶约 600+ 公里','🎵 两天塔公草原音乐节','⛰️ 最高海拔 4300m（折多山）','🌉 途经泸定桥、二郎山隧道','❤️ 和宝贝的三天美好回忆','🎉 勇闯318圆满完成！'];
+  var items = ['🚗 总行驶约 600+ 公里','🎵 两天塔公草原音乐节','⛰️ 最高海拔 4300m（折多山）','🌉 途经泸定桥、二郎山隧道','❤️ 和宝贝欣欣的三天美好回忆','🎉 勇闯318圆满完成！'];
   for (var i = 0; i < items.length; i++) {
     (function(s, i) {
       setTimeout(function() {
@@ -813,7 +833,7 @@ function showSummary() {
 
 function initDecor() {
   var c = document.getElementById('decorContainer');
-  var es = ['🎀','💕','✨','🌸','💗','🌟','🎵'];
+  var es = ['🎀','💕','✨','🌸','💗','🌟','🎵','⭐','⭐','🌟'];
   for (var i = 0; i < 18; i++) {
     var e = document.createElement('div');
     e.className = 'floating-decor';
